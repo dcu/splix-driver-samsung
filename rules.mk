@@ -14,7 +14,7 @@ $(pstoqpdl_TARGET): $(pstoqpdl_OBJ)
 	$(Q)g++ -o $@ $^ $(pstoqpdl_CXXFLAGS) $(pstoqpdl_LDFLAGS) \
 		$(pstoqpdl_LIBS)
 
-.PHONY: install installcms
+.PHONY: install installcms installosx
 cmd_install_raster	= INSTALL           $(rastertoqpdl_TARGET)
 cmd_install_ps		= INSTALL           $(pstoqpdl_TARGET)
 cmd_install_cms		= INSTALL           color profile files
@@ -44,9 +44,11 @@ installcms:
 			"MANUFACTURER={samsung,xerox,dell}"; \
 	fi
 
-
-
-
+installosx: $(rastertoqpdl_TARGET) $(pstoqpdl_TARGET)
+	install -m 755 $(rastertoqpdl_TARGET) $(DESTDIR)${CUPSFILTER}
+	install -m 755 $(pstoqpdl_TARGET) $(DESTDIR)${CUPSFILTER}
+	$(Q)$(MAKE) --no-print-directory -C ppd install Q=$(Q) \
+		DESTDIR=/tmp DISABLE_JBIG=$(DISABLE_JBIG)
 # Specific rules used for development and information
 
 .PHONY: tags optionList drv ppd cleanppd
